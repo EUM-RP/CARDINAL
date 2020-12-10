@@ -1,4 +1,5 @@
-const Discord = require('discord.js'); // Подключаем библиотеку discord.js
+const { Client, MessageEmbed } = require('discord.js');
+const Discord = require('discord.js');
 const cardinal = new Discord.Client(); // Объявляем, что cardinal - бот
 const comms = require("./comms.js"); // main comms
 const fs = require('fs'); // Подключаем родной модуль файловой системы node.js  
@@ -50,38 +51,67 @@ cardinal.on('message', (message) => {
     }
 });
 
+//quiet clear
+cardinal.on('message', (message) => {
+  /* Проверяем что сообщение начинается с префикса */
+  if (!message.content.startsWith(prefix)) return;
+  /* Разделяем сообщение на массив из аргументов обрезая на длину префикса */
+  let args = message.content.substring(prefix.length).split(' ');
+  /* Получаем комманду, первый элемент массива */
+  let command = args.shift();
+  if (message.content === '/quiet clear') {
+      if (!message.member.hasPermission('MANAGE_MESSAGES')) return message.reply('Для использования данной команды тебе необходимы права для удаления сообщения');
+      /* Получаем кол-во сообщений к удалению, проверяем, что колд-во указанно корректно, если нет задаем кол-во равным 100 */
+      let count = Number.parseInt(args[0]);
+      if (!count || count > 100 || count <= 0) count = 100;
+      message.channel
+          .bulkDelete(count)
+          .then(() => {
+            
+          })
+          .catch((err) => {
+              message.channel.send('PERMISSION ERROR');
+          });
+  }
+});
+
 //activity
 cardinal.on('ready', () => {
-  cardinal.user.setActivity('Cheack system, is you want call me - say /systemcall', { type: 'PLAYING' })
+  cardinal.user.setActivity('Cheack system. If you want call me - write /systemcall', { type: 'PLAYING' })
 })
 
 //cheackpingcardinal
 cardinal.on('message', message => {
   if (message.content === '/chi') {
-    message.channel.send('cha');
+    message.channel.send('cha')
   }
 });
+
 
 //help
 cardinal.on('message', message => {
-  if (message.content === '/help') {
-    message.channel.send('Привет, я многофункциональная система Cardinal, если у вас есть роль высокого уровня доступа, то для выполнения функций у вас есть /systemcall .');
-  }
-});
+  // If the message is "how to embed"
+  if (message.content === '/help hight') {
+const exampleEmbed = new Discord.MessageEmbed()
+	.setColor('#FF0000')
+	.setTitle('AGREE PERMISSION')
+	.setAuthor('Cardinal', 'https://i.imgur.com/pFgee3N.jpg', 'https://discord.js.org')
+	.setDescription('Привет, я многофункциональная система Cardinal, если у вас есть роль высокого уровня доступа, то для выполнения функций пропишите /systemcall .')
+  .setThumbnail('https://media.giphy.com/media/z96fCjqgTkGmaXAlNp/giphy.gif')
+  .setURL('https://vk.com/group/eum')
+	.addFields(
+		{ name: 'COMMANDS', value: 'Commands for roles hight pass.' },
+		{ name: '\u200B', value: '\u200B' },
+		{ name: '/clear', value: 'Удаление сообщений. ( empty - full; 1-100 number message.', block : true },
+		{ name: '/quiet clear', value: 'Тихое удаление сообщений. ( empty - full; 1-100 number message.', block : true },
+	)
+	.addField('This commands only for:', '"Founder / Developer / Server Manager"', true)
+	.setImage('https://i.imgur.com/pFgee3N.jpg')
+	.setTimestamp()
+	.setFooter('Cardinal', 'https://i.imgur.com/pFgee3N.jpg');
 
-
-//systemhelp
-cardinal.on('message', message => {
-  if (message.content === '/systemhelp') {
-    message.channel.send('Очистка чата.');
-    message.channel.send('Создание роли.');
-    message.channel.send('Удаление роли.');
-    message.channel.send('Добавление участников к роли.');
-    message.channel.send('Удаление участников в роли.');
-    message.channel.send('Блокировка участников.');
-    message.channel.send('Мут участников.');
-    message.channel.send('Кик участников.');
-  }
+  message.channel.send(exampleEmbed);
+}
 });
 
 
