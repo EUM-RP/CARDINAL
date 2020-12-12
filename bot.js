@@ -8,8 +8,15 @@ let token = config.token; // «Вытаскиваем» из него токен
 let prefix = config.prefix; // «Вытаскиваем» из него префикс
 
 //console
-cardinal.on("ready", function() {
-  console.log(cardinal.user.username + " запустился!");
+cardinal.on('ready', () => {
+  console.log(`cardinal started`);
+  cardinal.user.setPresence({
+      status: 'online',
+      activity: {
+          type: 'PLAYING',
+          name: 'Cheack system. If you want call me - write /systemcall',
+      },
+  });
 });
 
 
@@ -75,11 +82,6 @@ cardinal.on('message', (message) => {
   }
 });
 
-//activity
-cardinal.on('ready', () => {
-  cardinal.user.setActivity('Cheack system. If you want call me - write /systemcall', { type: 'PLAYING' })
-})
-
 //cheackpingcardinal
 cardinal.on('message', message => {
   if (message.content === '/chi') {
@@ -114,5 +116,10 @@ const exampleEmbed = new Discord.MessageEmbed()
 }
 });
 
+cardinal.on('message', message => {
+  if (message.content === '/stop') {
+    process.exit();
+  }
+});
 
 cardinal.login(token); // Авторизация бота
